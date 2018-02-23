@@ -5,16 +5,17 @@ package com.oldhat.marble.smarthelmet;
  */
 
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageButton;
+import android.os.Bundle;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.Toast;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.os.AsyncTask;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -22,15 +23,14 @@ import java.util.UUID;
 public class HelmetActivity extends AppCompatActivity {
 
   // Button btnOn, btnOff, btnDis;
-  
-  //SPP UUID. Look for it
-  static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
   ImageButton On, Off, Discnt, Abt;
   String address = null;
+  private ProgressDialog progress;
   BluetoothAdapter myBluetooth = null;
   BluetoothSocket btSocket = null;
-  private ProgressDialog progress;
   private boolean isBtConnected = false;
+  //SPP UUID. Look for it
+  static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -44,10 +44,10 @@ public class HelmetActivity extends AppCompatActivity {
     setContentView(R.layout.activity_helmet_control);
 
     //call the widgets
-    On = findViewById(R.id.on);
-    Off = findViewById(R.id.off);
-    Discnt = findViewById(R.id.discnt);
-    Abt = findViewById(R.id.abt);
+    On = (ImageButton)findViewById(R.id.on);
+    Off = (ImageButton)findViewById(R.id.off);
+    Discnt = (ImageButton)findViewById(R.id.discnt);
+    Abt = (ImageButton)findViewById(R.id.abt);
 
     new ConnectBT().execute(); //Call the class to connect
 
