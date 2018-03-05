@@ -5,32 +5,31 @@ package com.oldhat.marble.smarthelmet;
  */
 
 import android.app.ProgressDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageButton;
-import android.os.Bundle;
-import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
-import android.view.View;
-import android.widget.Toast;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.AsyncTask;
-
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 import java.io.IOException;
 import java.util.UUID;
 
 
 public class HelmetActivity extends AppCompatActivity {
 
-  // Button btnOn, btnOff, btnDis;
-  ImageButton On, Off, Discnt, Abt;
-  String address = null;
-  private ProgressDialog progress;
-  BluetoothAdapter myBluetooth = null;
-  BluetoothSocket btSocket = null;
-  private boolean isBtConnected = false;
   //SPP UUID. Look for it
   static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+  // Button btnOn, btnOff, btnDis;
+  ImageButton Discnt, Abt;
+  String address = null;
+  BluetoothAdapter myBluetooth = null;
+  BluetoothSocket btSocket = null;
+  private ProgressDialog progress;
+  private boolean isBtConnected = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -44,30 +43,12 @@ public class HelmetActivity extends AppCompatActivity {
     setContentView(R.layout.activity_helmet_control);
 
     //call the widgets
-    On = (ImageButton)findViewById(R.id.on);
-    Off = (ImageButton)findViewById(R.id.off);
-    Discnt = (ImageButton)findViewById(R.id.discnt);
-    Abt = (ImageButton)findViewById(R.id.abt);
+    Discnt = findViewById(R.id.discnt);
+    Abt = findViewById(R.id.abt);
 
     new ConnectBT().execute(); //Call the class to connect
 
-    //commands to be sent to bluetooth
-    On.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        turnOnLed();      //method to turn on
-      }
-    });
 
-    Off.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v)
-      {
-        turnOffLed();   //method to turn off
-      }
-    });
 
     Discnt.setOnClickListener(new View.OnClickListener()
     {
@@ -96,7 +77,7 @@ public class HelmetActivity extends AppCompatActivity {
 
   }
 
-  private void turnOffLed()
+  /*private void turnOffLed()
   {
     if (btSocket!=null)
     {
@@ -124,7 +105,7 @@ public class HelmetActivity extends AppCompatActivity {
         msg("Error");
       }
     }
-  }
+  }*/
 
   // fast way to call Toast
   private void msg(String s)
