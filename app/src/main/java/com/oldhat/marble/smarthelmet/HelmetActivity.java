@@ -13,7 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.UUID;
@@ -24,7 +24,7 @@ public class HelmetActivity extends AppCompatActivity {
   //SPP UUID. Look for it
   static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
   // Button btnOn, btnOff, btnDis;
-  ImageButton Discnt, Abt;
+  Button Discnt, Setting;
   String address = null;
   BluetoothAdapter myBluetooth = null;
   BluetoothSocket btSocket = null;
@@ -44,7 +44,7 @@ public class HelmetActivity extends AppCompatActivity {
 
     //call the widgets
     Discnt = findViewById(R.id.discnt);
-    Abt = findViewById(R.id.abt);
+    Setting = findViewById(R.id.setting);
 
     new ConnectBT().execute(); //Call the class to connect
 
@@ -116,6 +116,14 @@ public class HelmetActivity extends AppCompatActivity {
   public void settings(View view) {
     Intent i = new Intent(this, Settings.class);
     startActivity(i);
+  }
+
+  public void navActivity(View view) {
+
+    Intent intent = new Intent(this, MapsActivity.class);
+    startActivity(intent);
+
+
   }
 
   //Thread to connect to bluetooth
