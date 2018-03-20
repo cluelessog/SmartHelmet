@@ -4,22 +4,38 @@ package com.oldhat.marble.smarthelmet;
  * Created by sourabh on 21/2/18.
  */
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+import com.gc.materialdesign.views.Button;
+import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+import com.gc.materialdesign.widgets.Dialog;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.UUID;
 
 
-public class HelmetActivity extends AppCompatActivity {
+public class HelmetActivity extends AppCompatActivity implements LocationListener,
+    GpsStatus.Listener {
+
 
   //SPP UUID. Look for it
   static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -28,9 +44,13 @@ public class HelmetActivity extends AppCompatActivity {
   String address = null;
   BluetoothAdapter myBluetooth = null;
   BluetoothSocket btSocket = null;
+  private LocationManager mLocationManager;
+  private Toolbar toolbar;
+  private TextView status;
+  private ProgressBarCircularIndeterminate progressBarCircularIndeterminate;
+  private TextView currentSpeed;
   private ProgressDialog progress;
   private boolean isBtConnected = false;
-
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
@@ -42,14 +62,22 @@ public class HelmetActivity extends AppCompatActivity {
     //view of the ledControl
     setContentView(R.layout.activity_helmet_control);
 
+    new ConnectBT().execute(); //Call the class to connect
+    //speed widget initialisation
+
+    toolbar = findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    //setTitle("");
+    status = findViewById(R.id.status);
+    mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    currentSpeed = findViewById(R.id.currentSpeed);
+    progressBarCircularIndeterminate = findViewById(R.id.progressBarCircularIndeterminate);
+
+
+
     //call the widgets
     Discnt = findViewById(R.id.discnt);
     Setting = findViewById(R.id.setting);
-
-    new ConnectBT().execute(); //Call the class to connect
-
-
-
     Discnt.setOnClickListener(new View.OnClickListener()
     {
       @Override
@@ -61,6 +89,115 @@ public class HelmetActivity extends AppCompatActivity {
 
 
   }
+
+
+  @SuppressLint("MissingPermission")
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    if (mLocationManager.getAllProviders().indexOf(LocationManager.GPS_PROVIDER) >= 0) {
+      mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, this);
+    } else {
+      Log.w("HelmetActivity",
+          "No GPS location provider found. GPS data display will not be available.");
+    }
+
+    if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+      showGpsDisabledDialog();
+    }
+
+    mLocationManager.addGpsStatusListener(this);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    mLocationManager.removeUpdates(this);
+    mLocationManager.removeGpsStatusListener(this);
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+  }
+
+  private void speedAlert() {
+    if (btSocket != null) {
+      try {
+        btSocket.getOutputStream().write("You are overspeeding".getBytes());
+      } catch (IOException e) {
+        msg("error");
+      }
+    }
+  }
+
+  @Override
+  public void onLocationChanged(Location location) {
+
+    if (location.hasSpeed()) {
+      progressBarCircularIndeterminate.setVisibility(View.GONE);
+      status.setText("");
+      String speed = String.format(Locale.ENGLISH, "%.0f", location.getSpeed() * 3.6) + "km/h";
+      SpannableString s = new SpannableString(speed);
+      s.setSpan(new RelativeSizeSpan(0.25f), s.length() - 4, s.length(), 0);
+      currentSpeed.setText(s);
+      int speedLimit = 70;
+      int currSpeed = Integer
+          .parseInt(String.format(Locale.ENGLISH, "%.0f", location.getSpeed() * 3.6));
+      if (currSpeed > speedLimit) {
+        speedAlert();
+      }
+    } else {
+      status.setText(R.string.waiting_for_fix);
+      currentSpeed.setText("");
+      progressBarCircularIndeterminate.setVisibility(View.VISIBLE);
+    }
+
+  }
+
+  public void onGpsStatusChanged(int event) {
+    switch (event) {
+
+      case GpsStatus.GPS_EVENT_STOPPED:
+        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+          showGpsDisabledDialog();
+        }
+        break;
+      case GpsStatus.GPS_EVENT_FIRST_FIX:
+        break;
+    }
+  }
+
+  public void showGpsDisabledDialog() {
+    Dialog dialog = new Dialog(this, getResources().getString(R.string.gps_disabled),
+        getResources().getString(R.string.please_enable_gps));
+
+    dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        startActivity(new Intent("android.settings.LOCATION_SOURCE_SETTINGS"));
+      }
+    });
+    dialog.show();
+  }
+
+  // public static Data getData() {
+  //   return data;
+  // }
+
+  @Override
+  public void onStatusChanged(String s, int i, Bundle bundle) {
+  }
+
+  @Override
+  public void onProviderEnabled(String s) {
+  }
+
+  @Override
+  public void onProviderDisabled(String s) {
+  }
+
 
   private void Disconnect()
   {
@@ -77,6 +214,8 @@ public class HelmetActivity extends AppCompatActivity {
 
   }
 
+
+
   /*private void turnOffLed()
   {
     if (btSocket!=null)
@@ -91,7 +230,15 @@ public class HelmetActivity extends AppCompatActivity {
       }
     }
   }
-
+  public void sendText(View view) {
+    if(btSocket != null){
+      try {
+        btSocket.getOutputStream().write("hello\n".getBytes());
+      }catch (IOException e){
+        msg("Error");
+      }
+    }
+  }
   private void turnOnLed()
   {
     if (btSocket!=null)
@@ -126,6 +273,7 @@ public class HelmetActivity extends AppCompatActivity {
 
   }
 
+
   //Thread to connect to bluetooth
   private class ConnectBT extends AsyncTask<Void, Void, Void>  // UI thread
   {
@@ -153,7 +301,7 @@ public class HelmetActivity extends AppCompatActivity {
       }
       catch (IOException e)
       {
-        ConnectSuccess = false;//if the try failed, you can check the exception here
+        //ConnectSuccess = false;//if the try failed, you can check the exception here
       }
       return null;
     }
@@ -175,5 +323,8 @@ public class HelmetActivity extends AppCompatActivity {
       progress.dismiss();
     }
   }
+
+
 }
+
 

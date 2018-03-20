@@ -1,0 +1,24 @@
+<resources>
+  <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=8A:45:FF:59:1B:FD:E9:D1:82:ED:83:CD:57:24:C2:D5:8D:9D:6C:54%3Bcom.oldhat.marble.smarthelmet
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    8A:45:FF:59:1B:FD:E9:D1:82:ED:83:CD:57:24:C2:D5:8D:9D:6C:54
+
+    SHA-1 certificate fingerprint:
+    8A:45:FF:59:1B:FD:E9:D1:82:ED:83:CD:57:24:C2:D5:8D:9D:6C:54
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+  <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAJ5xgXOdWkQ95CbkkYzMogCG0MVVUAUt4</string>
+</resources>

@@ -7,10 +7,5 @@
     android:endColor="#cfd8dc"
     android:startColor="#d7ccc8"/>
 
-  <padding
-    android:bottom="7dp"
-    android:left="7dp"
-    android:right="7dp"
-    android:top="7dp"/>
 
 </shape>
