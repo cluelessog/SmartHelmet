@@ -1,7 +1,10 @@
 package com.oldhat.marble.smarthelmet;
 
 import android.util.Log;
+import com.google.android.gms.maps.model.LatLng;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +70,12 @@ class DataParser {
   }
 
   private HashMap<String, String> getManeuvers(JSONArray jsonArray) {
+    List<HashMap<String, LatLng>> maneu = new ArrayList<HashMap<String, LatLng>>();
+    String manuever = "";
+    LatLng dest;
+    for (int i = 0; i < jsonArray.length(); i++) {
+
+    }
     return null;
   }
 
