@@ -109,7 +109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     googleDirectionsUrl.append(
         "origin=" + mLastKnownLocation.getLatitude() + "," + mLastKnownLocation.getLongitude());
     googleDirectionsUrl.append("&destination=" + latLng.latitude + "," + latLng.longitude);
-    googleDirectionsUrl.append("&key=" + "AIzaSyC-0Ul8S58vrfAdQ7D61clo1TPFCmKdmYs");
+    googleDirectionsUrl.append("&key=" + "your key");
     return googleDirectionsUrl.toString();
 
   }
